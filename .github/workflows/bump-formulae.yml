@@ -1,0 +1,51 @@
+name: Bump formulae
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash -xeuo pipefail {0}
+
+concurrency:
+  group: bump-formulae
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Generate a token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.BUMP_APP_ID }}
+          private-key: ${{ secrets.BUMP_APP_PRIVATE_KEY }}
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
+
+      # brew bump runs livecheck against every formula in the tap and opens a PR
+      # for each one that is outdated. It is a no-op when a bump PR is already open.
+      - name: Bump outdated formulae
+        env:
+          HOMEBREW_DEVELOPER: "1"
+          HOMEBREW_GITHUB_API_TOKEN: ${{ steps.app-token.outputs.token }}
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          # Attributes the commits to the app's bot account. The app slug comes
+          # from the token step, so only the numeric user ID needs configuring.
+          HOMEBREW_GIT_NAME: ${{ steps.app-token.outputs.app-slug }}[bot]
+          HOMEBREW_GIT_EMAIL: ${{ vars.BUMP_APP_USER_ID }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com
+        run: |
+          brew tap openshift-online/sre-tools
+          brew bump \
+            --formulae \
+            --tap openshift-online/sre-tools \
+            --open-pr \
+            --no-fork

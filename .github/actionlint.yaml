@@ -1,0 +1,7 @@
+# Picked up by `brew style` in place of Homebrew's own actionlint config, which
+# only allows the configuration variables used by homebrew/brew itself.
+self-hosted-runner:
+  labels: []
+config-variables:
+  - BUMP_APP_ID
+  - BUMP_APP_USER_ID
