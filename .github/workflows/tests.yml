@@ -14,11 +14,14 @@ defaults:
 
 jobs:
   test-bot:
+    name: test-bot (${{ matrix.label }})
     strategy:
       matrix:
-        os: [ macos-26 ]
         include:
+          - os: macos-26
+            label: macos
           - os: ubuntu-latest
+            label: linux
             container:
               image: ghcr.io/homebrew/brew:main
               options: --privileged
