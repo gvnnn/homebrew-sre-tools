@@ -30,6 +30,8 @@ jobs:
 
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
+        with:
+          core: true
 
       # brew bump runs livecheck against every formula in the tap and opens a PR
       # for each one that is outdated. It is a no-op when a bump PR is already open.
