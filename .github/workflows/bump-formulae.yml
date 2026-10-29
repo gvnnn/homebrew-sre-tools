@@ -33,6 +33,9 @@ jobs:
         with:
           core: true
 
+      - name: Install krb5 headers for gssapi metadata resolution
+        run: sudo apt-get update && sudo apt-get install -y libkrb5-dev
+
       # brew bump runs livecheck against every formula in the tap and opens a PR
       # for each one that is outdated. It is a no-op when a bump PR is already open.
       - name: Bump outdated formulae
